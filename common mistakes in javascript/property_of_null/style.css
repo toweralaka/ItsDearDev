@@ -1,0 +1,21 @@
+.container {
+    width: 700px;
+    height: 700px;
+    border: 1px solid blue;
+}
+
+.circle {
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    transition-duration: 5s;
+}
+
+.message-ball {
+    font-size: 1em;
+    overflow-wrap: break-word;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
