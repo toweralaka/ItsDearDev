@@ -1,10 +1,14 @@
-const heading = document.querySelector('#main-heading');
-heading.textContent = "Hello World!";
+window.addEventListener("DOMContentLoaded", ()=>{
+    const heading = document.querySelector('#main-heading');
+    console.log(heading);
+    heading.textContent = "Hello World!";
 
-showCircle(150, 150, 100).then(div => {
-    div.classList.add('message-ball');
-    div.append("Hello, world!");
-});
+    showCircle(150, 150, 100).then(div => {
+        div.classList.add('message-ball');
+        div.append("Hello, world!");
+    });
+})
+
 
 
 function showCircle(cx, cy, radius){

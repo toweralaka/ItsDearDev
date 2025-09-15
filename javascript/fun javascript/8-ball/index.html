@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Magic 8 Ball</title>
+  <style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom, #111, #333);
+      color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    h1,p {
+        margin: 20px;
+    }
+    .ball {
+        position: relative;
+      width: 200px;
+      height: 200px;
+      background: black;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 2px -2px 2px 1px #f2f1f1;
+      transition: transform 1s;
+      /* border: 1px solid #fff; */
+    }
+    .ball.shake {
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      10% { transform: rotate(10deg); }
+      20% { transform: rotate(-100deg); }
+      30% { transform: rotate(20deg); }
+      40% { transform: rotate(-20deg); }
+      50% { transform: rotate(30deg); }
+      60% { transform: rotate(-30deg); }
+      70% { transform: rotate(10deg); }
+      80% { transform: rotate(-10deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .ball-inner {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        width: 60px;
+        height: 60px;
+        background: #fff;
+        border-radius: 50%;
+        color: #333;
+        font-weight: bolder;
+        box-shadow: 2px -2px 2px 1px #858282;
+    }
+    .answer {
+        margin-top: 10px;
+      position: absolute;
+      color: cyan;
+      font-weight: bold;
+      text-shadow: 0 0 5px cyan;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔮 Magic 8 Ball</h1>
+  <div class="ball">
+    <div class="ball-inner">8</div>
+    <div class="answer">?</div>
+  </div>
+  <p>Move your cursor over the ball and ask your question!</p>
+
+  <script>
+    // 1. VARIABLES: Store possible answers
+    const answers = [
+      "Yes! 🎉",
+      "Nope 😢",
+      "Maybe 🤔",
+      "Try again 🔁",
+      "Definitely! 💯",
+      "Not today 😬"
+    ];
+    const answerElem = document.querySelector(".answer");
+    const eightBall = document.querySelector(".ball");
+    const getResponse = ()=>{
+        answerElem.style.display = "none";
+        eightBall.classList.add("shake");
+        const randomNumber = Math.random() * answers.length;
+        const randomIndex = Math.floor(randomNumber);
+        const randomAnswer = answers[randomIndex];
+        setTimeout(()=>{
+            answerElem.textContent = randomAnswer;
+            answerElem.style.display = "block";
+            eightBall.classList.remove("shake");
+        }, 1000)
+        
+    }
+    eightBall.addEventListener("mouseover", getResponse);
+  </script>
+</body>
+</html>

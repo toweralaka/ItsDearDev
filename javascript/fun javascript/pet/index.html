@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet</title>
+    <style>
+        #cat {
+        font-size: 80px;
+        transition: transform 0.5s;
+        }
+        .happy {
+        transform: scale(1.2) rotate(10deg);
+        }
+        .playful {
+        transform: translateY(-20px) rotate(-10deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h2>🐱 Meet Mr. Whiskers!</h2>
+        <p id="status">Happiness: 50 | Hunger: 50</p>
+        <button onclick="cat.feed()">🍖 Feed</button>
+        <button onclick="cat.play()">🎾 Play</button>
+        <div id="cat">😺</div>
+    </div>
+    <script>
+        let cat = {
+            name: "Mr. Whiskers",
+            happiness: 50,
+            hunger: 50,
+
+            updateStatus: function () {
+                document.getElementById("status").innerText =
+                    `Happiness: ${this.happiness} | Hunger: ${this.hunger}`;
+            },
+
+            feed: function () {
+                this.hunger -= 10;
+                this.happiness += 5;
+                document.getElementById("cat").innerText = "😻"; // happy face
+                this.updateStatus();
+            },
+
+            play: function () {
+                this.happiness += 10;
+                this.hunger += 5;
+                document.getElementById("cat").innerText = "😸"; // playful face
+                this.updateStatus();
+            }
+        };
+
+        cat.updateStatus();
+        let sss = {
+        feed: function() {
+                this.hunger -= 10;
+                this.happiness += 5;
+                let catEl = document.getElementById("cat");
+                catEl.innerText = "😻";
+                catEl.className = "happy";
+                setTimeout(() => catEl.className = "", 500);
+                this.updateStatus();
+            },
+
+            play: function() {
+                this.happiness += 10;
+                this.hunger += 5;
+                let catEl = document.getElementById("cat");
+                catEl.innerText = "😸";
+                catEl.className = "playful";
+                setTimeout(() => catEl.className = "", 500);
+                this.updateStatus();
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+

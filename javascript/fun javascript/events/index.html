@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JS Events: Tooltip • Keyboard • Flip • Drag & Drop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --gap: 16px; --card-w: 220px; --card-h: 140px; }
+    body { font-family: system-ui, sans-serif; line-height: 1.4; padding: 24px; }
+    section { margin-bottom: 40px; }
+    h2 { margin: 0 0 8px; }
+    .demo { border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+
+    /* Tooltip bubble */
+    .tooltip-bubble {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(0,0,0,.85);
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      max-width: 240px;
+      z-index: 9999;
+      transform: translate(8px, 8px);
+      white-space: nowrap;
+    }
+
+    /* Card flip */
+    .card {
+      width: var(--card-w);
+      height: var(--card-h);
+      perspective: 1000px;
+      border-radius: 12px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .6s;
+      transform-style: preserve-3d;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.1);
+      overflow: hidden;
+    }
+    .card.is-flipped .card-inner { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      backface-visibility: hidden;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .card-front { background: #e6f2ff; }
+    .card-back  { background: #ffe6ec; transform: rotateY(180deg); }
+
+    /* Drag & Drop */
+    .drag-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+      align-items: start;
+    }
+    .palette, .dropzone {
+      min-height: 140px;
+      border: 2px dashed #bbb;
+      border-radius: 10px;
+      padding: var(--gap);
+    }
+    .drag-item {
+      display: inline-block;
+      padding: 8px 12px;
+      margin: 6px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+    }
+    .dropzone {
+      transition: background-color .2s, border-color .2s;
+    }
+    .dropzone.highlight {
+      background: #f0fdf4;
+      border-color: #22c55e;
+    }
+
+    .row { display: flex; gap: var(--gap); align-items: center; flex-wrap: wrap; }
+    code.kbd { background: #f3f4f6; padding: 2px 6px; border-radius: 6px; border: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+
+  <!-- 1) JS TOOLTIP -->
+  <section>
+    <h2>1) Tooltip (pure JS)</h2>
+    <div class="demo">
+      <p>Hover the highlighted terms to see JS-built tooltips:</p>
+      <p class="row">
+        <span class="has-tooltip" data-tooltip="A lightweight note that follows your cursor.">Tooltip</span>
+        <span class="has-tooltip" data-tooltip="Events are user actions like 'click', 'keydown', 'drag'.">Event</span>
+        <span class="has-tooltip" data-tooltip="Always position tooltips within the viewport to avoid clipping.">Positioning</span>
+      </p>
+      <p>Tip: Try moving your mouse—tooltip follows the cursor.</p>
+    </div>
+  </section>
+
+  <!-- 2) KEYBOARD: SELECT 'A' WHEN 'A' PRESSED -->
+  <section>
+    <h2>2) Keyboard: select “A” when you press <code class="kbd">A</code></h2>
+    <div class="demo">
+      <div class="row">
+        <label for="letters">Letters:</label>
+        <select id="letters">
+          <option value="">— pick one —</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3) CARD FLIP ON HOVER (JS toggles class) -->
+  <section>
+    <h2>3) Card Flip on Hover (JS adds/removes class)</h2>
+    <div class="demo">
+      <div class="card" id="flipCard" aria-label="Flip card on hover or focus">
+        <div class="card-inner">
+          <div class="card-face card-front">Front</div>
+          <div class="card-face card-back">Back</div>
+        </div>
+      </div>
+      <p>Hover or focus the card to flip (JS handles <code>mouseenter</code>/<code>mouseleave</code> and <code>focus</code>/<code>blur</code>).</p>
+    </div>
+  </section>
+
+  <!-- 4) DRAG & DROP with real DROP zone -->
+  <section>
+    <h2>4) Drag & Drop (with true drop target)</h2>
+    <div class="demo drag-area">
+      <div class="palette" aria-label="Palette (drag from here)">
+        <strong>Palette (draggable):</strong><br/>
+        <span class="drag-item" draggable="true" id="item-1">🍎 Apple</span>
+        <span class="drag-item" draggable="true" id="item-2">🍊 Orange</span>
+        <span class="drag-item" draggable="true" id="item-3">🍇 Grapes</span>
+      </div>
+
+      <div class="dropzone" id="basket" aria-label="Dropzone (drop here)">
+        <strong>Basket (drop here):</strong>
+        <div id="basketContent"></div>
+      </div>
+    </div>
+    <p style="margin-top:8px;">Try dragging a fruit into the basket. The dropzone highlights on hover and accepts drops.</p>
+  </section>
+
+  <script>
+    /* =========================
+       1) PURE-JS TOOLTIP
+       ========================= */
+    (function setupTooltips() {
+      let bubble = null;
+
+      function showTooltip(e) {
+        const text = e.currentTarget.getAttribute('data-tooltip');
+        if (!text) return;
+
+        // Create bubble once
+        bubble = document.createElement('div');
+        bubble.className = 'tooltip-bubble';
+        bubble.textContent = text;
+        document.body.appendChild(bubble);
+
+        position(e);
+      }
+
+      function hideTooltip() {
+        if (bubble && bubble.remove) bubble.remove();
+        bubble = null;
+      }
+
+      function position(e) {
+        if (!bubble) return;
+        const padding = 12; // keep inside viewport
+        let x = e.clientX + 10;
+        let y = e.clientY + 10;
+
+        // Clamp within viewport
+        const rect = bubble.getBoundingClientRect();
+        const vw = window.innerWidth, vh = window.innerHeight;
+
+        if (x + rect.width + padding > vw) x = vw - rect.width - padding;
+        if (y + rect.height + padding > vh) y = vh - rect.height - padding;
+
+        bubble.style.left = x + 'px';
+        bubble.style.top  = y + 'px';
+      }
+
+      document.querySelectorAll('.has-tooltip').forEach(el => {
+        el.style.background = 'rgba(255, 238, 88, .4)'; // subtle highlight
+        el.style.padding = '2px 6px';
+        el.style.borderRadius = '6px';
+
+        el.addEventListener('mouseenter', showTooltip);
+        el.addEventListener('mousemove', position);
+        el.addEventListener('mouseleave', hideTooltip);
+        el.addEventListener('blur', hideTooltip);
+      });
+    })();
+
+    /* =================================================
+       2) KEYBOARD: SELECT "A" WHEN "A" IS PRESSED
+       - Ignores when user is typing in inputs/textareas
+       ================================================= */
+    (function setupKeyASelect() {
+      const select = document.getElementById('letters');
+
+      document.addEventListener('keydown', (e) => {
+        const active = document.activeElement;
+        const typingInField = active && (
+          active.tagName === 'INPUT' ||
+          active.tagName === 'TEXTAREA' ||
+          active.isContentEditable
+        );
+        if (typingInField) return;
+
+        if (e.key.toLowerCase() === 'a') {
+          select.value = 'A';
+          // Optional: announce to screen readers or give feedback
+          // console.log('Selected A via keyboard');
+        }
+      });
+    })();
+
+    /* ===========================================
+       3) CARD FLIP ON HOVER (JS toggles class)
+       =========================================== */
+    (function setupCardFlip() {
+      const card = document.getElementById('flipCard');
+
+      function flipOn()  { card.classList.add('is-flipped'); }
+      function flipOff() { card.classList.remove('is-flipped'); }
+
+      card.setAttribute('tabindex', '0'); // allow keyboard focus
+
+      card.addEventListener('mouseenter', flipOn);
+      card.addEventListener('mouseleave', flipOff);
+      card.addEventListener('focus', flipOn);
+      card.addEventListener('blur', flipOff);
+    })();
+
+    /* ===========================================
+       4) DRAG & DROP (HTML5 DnD with drop target)
+       =========================================== */
+    (function setupDragAndDrop() {
+      const items = document.querySelectorAll('.drag-item');
+      const dropzone = document.getElementById('basket');
+      const basketContent = document.getElementById('basketContent');
+
+      // When drag starts, put the dragged item's id into dataTransfer
+      items.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', e.target.id);
+          // Optional visual cue
+          setTimeout(() => { e.target.style.opacity = '0.5'; }, 0);
+        });
+        item.addEventListener('dragend', (e) => {
+          e.target.style.opacity = '';
+        });
+      });
+
+      // Allow dropping by preventing default in dragover
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault(); // REQUIRED to allow drop
+        dropzone.classList.add('highlight');
+      });
+
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('highlight');
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('highlight');
+
+        const id = e.dataTransfer.getData('text/plain');
+        if (!id) return;
+
+        const dragged = document.getElementById(id);
+        if (!dragged) return;
+
+        // Clone or move? Here we MOVE into basket
+        basketContent.appendChild(dragged);
+        dragged.setAttribute('draggable', 'true'); // keep draggable in basket
+
+        // Optional: announce
+        // console.log(`${dragged.textContent.trim()} dropped into basket`);
+      });
+    })();
+
+    /* ===========================
+       Common gotchas (quick notes)
+       - Tooltip: update position on mousemove to follow cursor; clamp to viewport.
+       - Keyboard: guard against triggering while typing in inputs/areas.
+       - Card flip: use JS events (mouseenter/leave) to toggle classes.
+       - Drag & drop: MUST call e.preventDefault() in dragover; use dataTransfer.
+       =========================== */
+  </script>
+</body>
+</html>

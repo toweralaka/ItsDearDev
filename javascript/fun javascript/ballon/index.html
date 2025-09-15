@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .wrapper {
+            padding: 15px;
+            width: 60vw;
+            height: 80vh;
+            border: 1px solid sandybrown;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #balloon {
+            font-size: 30px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: row;
+            width: 80%;
+            justify-content: space-evenly;
+        }
+        .controls button{
+            padding: 15px;
+            background-color: rgb(101, 2, 88);
+            color: rgb(251, 255, 0);
+            font-size: 20px;
+            font-weight: 900;
+            border-radius: 5px;
+        }
+    </style>
+    <title>Balloon</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div id="balloon">🎈</div>
+        <div class="controls">
+            <button type="button" class="up">+</button>
+            <button type="button" class="down">-</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

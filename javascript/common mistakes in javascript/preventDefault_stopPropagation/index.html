@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 70vh;
+            width: 80vw;
+            margin: auto;
+            border: 1px solid brown;
+            padding: 40px;
+        }
+        #myForm, #parent {
+            border: 1px solid burlywood;
+            height: 40%;
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            padding: 20px;
+        }
+        button {
+            background-color: bisque;
+            color: #333;
+            padding: 5px;
+            border: 1px solid bisque;
+            width: 100px;
+            margin: auto;
+            font-weight: 900;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div id="parent">
+            <button id="child">Click Me</button>
+        </div>
+        <form id="myForm">
+            <input type="text" placeholder="Enter channel">
+            <button id="myButton">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById("parent").addEventListener("click", () => {
+            console.log("Parent clicked!");
+        });
+
+        document.getElementById("child").addEventListener("click", (event) => {
+            event.stopPropagation();
+            console.log("Child clicked!");
+        });
+        document.getElementById("myForm").addEventListener("submit", (event) => {
+            event.preventDefault();
+            // code that submits form using AJAX
+            console.log("Form submitted!");
+        });
+    </script>
+</body>
+</html>

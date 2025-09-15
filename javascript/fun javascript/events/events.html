@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Events Playground</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f4ff;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .section {
+      margin: 30px auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      height: 80vh;
+      max-width: 800px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .section:hover {
+      transform: scale(1.02);
+    }
+    #box {
+      width: 120px; height: 120px;
+      background: skyblue;
+      margin: auto;
+      line-height: 120px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.5s, transform 0.3s;
+    }
+    #box.clicked {
+      background: tomato;
+      transform: rotate(20deg) scale(1.1);
+    }
+    .cardd {
+      width: 200px;
+      height: 300px;
+      perspective: 1000px;
+    }
+
+    .cardd-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .cardd:hover .cardd-inner {
+      transform: rotateY(180deg);
+    }
+
+    .cardd-front, .cardd-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+    }
+
+    .cardd-front {
+      background: lightblue;
+    }
+
+    .cardd-back {
+      background: lightcoral;
+      transform: rotateY(180deg);
+    }
+    /* Card flip */
+    :root { --gap: 16px; --card-w: 220px; --card-h: 140px; }
+    body { font-family: system-ui, sans-serif; line-height: 1.4; padding: 24px; }
+    section { margin-bottom: 40px; }
+    h2 { margin: 0 0 8px; }
+    .demo { border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+
+    .card {
+      width: var(--card-w);
+      height: var(--card-h);
+      perspective: 1000px;
+      border-radius: 12px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .6s;
+      transform-style: preserve-3d;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.1);
+      overflow: hidden;
+    }
+    .card.is-flipped .card-inner { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      backface-visibility: hidden;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .card-front { background: #e6f2ff; }
+    .card-back  { background: #ffe6ec; transform: rotateY(180deg); }
+
+    #keyDisplay {
+      font-size: 1.2em;
+      transition: color 0.3s, transform 0.3s;
+    }
+    form input {
+      padding: 8px; margin: 5px; border-radius: 6px;
+      border: 1px solid #aaa;
+    }
+    #resizeMsg {
+      font-weight: bold;
+      color: purple;
+      margin-top: 10px;
+      transition: transform 0.3s;
+    }
+    #clipMsg {
+      font-weight: bold;
+      color: green;
+      margin-top: 10px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    #dropZone {
+      width: 200px; height: 200px;
+      border: 2px dashed gray;
+      margin: auto; display: flex;
+      align-items: center; justify-content: center;
+      border-radius: 12px;
+      transition: background 0.3s, transform 0.3s;
+    }
+    #dropZone.dropped {
+      background: lightgreen;
+      transform: scale(1.1);
+    }
+    #videoMsg {
+      font-weight: bold;
+      color: blue;
+      margin-top: 10px;
+      transition: opacity 0.5s;
+      opacity: 0;
+    }
+    .show {
+      opacity: 1 !important;
+    }
+        /* Drag & Drop */
+    .drag-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+      align-items: start;
+    }
+    .palette, .dropzone {
+      min-height: 140px;
+      border: 2px dashed #bbb;
+      border-radius: 10px;
+      padding: var(--gap);
+    }
+    .drag-item {
+      display: inline-block;
+      padding: 8px 12px;
+      margin: 6px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+    }
+    .dropzone {
+      transition: background-color .2s, border-color .2s;
+    }
+    .dropzone.highlight {
+      background: #f0fdf4;
+      border-color: #22c55e;
+    }
+
+    .row { display: flex; gap: var(--gap); align-items: center; flex-wrap: wrap; }
+    code.kbd { background: #f3f4f6; padding: 2px 6px; border-radius: 6px; border: 1px solid #e5e7eb; }
+
+    .dragArea {
+        display: flex;
+        justify-content: flex-end;
+        /* height: 200px; */
+        width: 60vw;
+        position: relative;
+        padding: 30px;
+    }
+    .dropBox {
+        height: 200px;
+        width: 200px;
+        padding: 30px;
+        border: 1px solid burlywood;
+    }
+    #dragItem {
+      width: 100px;
+      height: 100px;
+      background: dodgerblue;
+      color: white;
+      text-align: center;
+      line-height: 100px;
+      position: absolute;
+      cursor: grab;
+      left: 10px;
+      top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>JavaScript Events</h1>
+
+  <!-- Mouse Events -->
+  <div class="section">
+    <h3>Mouse Event: Click the box</h3>
+    <div id="box">Click me</div>
+  </div>
+
+  <div class="section">
+    <h3>Mouse Event: Move the mouse over the card</h3>
+    <div class="demo">
+        <div class="card" id="flipCard" aria-label="Flip card on hover or focus">
+            <div class="card-inner">
+                <div class="card-face card-front">Front</div>
+                <div class="card-face card-back">Back</div>
+            </div>
+        </div>
+        <p>Hover or focus the card to flip.
+        </p>
+    </div>
+  </div>
+
+  <!-- Keyboard Events -->
+  <div class="section">
+    <h3>Keyboard Event: Press any key</h3>
+    <h2 id="keyDisplay">Press something...</h2>
+  </div>
+
+  <!-- Form Events -->
+  <div class="section">
+    <h3>Form Events</h3>
+    <form id="myForm">
+      <input type="text" placeholder="Type here..." />
+      <button>Submit</button>
+    </form>
+    <p id="formMsg"></p>
+  </div>
+
+  <!-- Window Events -->
+  <div class="section">
+    <h3>Window Resize Event</h3>
+    <p id="resizeMsg">Resize the window to see magic!</p>
+  </div>
+
+  <!-- Clipboard Events -->
+  <div class="section">
+    <h3>Clipboard Events</h3>
+    <input type="text" id="clipInput" placeholder="Copy or paste here" />
+    <p id="clipMsg"></p>
+  </div>
+
+  <!-- Media Events -->
+  <div class="section">
+    <h3>Media Events</h3>
+    <video id="myVideo" width="300" controls>
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+    </video>
+    <p id="videoMsg"></p>
+  </div>
+
+<!-- Drag & Drop -->
+<div class="section">
+    <div class="demo drag-area">
+        <div class="palette" aria-label="Palette (drag from here)">
+            <strong>Palette (draggable):</strong><br />
+            <span class="drag-item" draggable="true" id="item-1">🍎 Apple</span>
+            <span class="drag-item" draggable="true" id="item-2">🍊 Orange</span>
+            <span class="drag-item" draggable="true" id="item-3">🍇 Grapes</span>
+        </div>
+
+        <div class="dropzone" id="basket" aria-label="Dropzone (drop here)">
+            <strong>Basket (drop here):</strong>
+            <div id="basketContent"></div>
+        </div>
+    </div>
+    <p style="margin-top:8px;">Try dragging a fruit into the basket. The dropzone highlights on hover and accepts drops.
+    </p>
+</div>
+<script>
+  // Mouse Event
+  const box = document.getElementById("box");
+  box.addEventListener("click", () => {
+    box.classList.toggle("clicked");
+  });
+
+    //=========================================== */
+    (function setupCardFlip() {
+        const card = document.getElementById('flipCard');
+
+        function flipOn() { card.classList.add('is-flipped'); }
+        function flipOff() { card.classList.remove('is-flipped'); }
+
+        card.setAttribute('tabindex', '0'); // allow keyboard focus
+
+        card.addEventListener('mouseenter', flipOn);
+        card.addEventListener('mouseleave', flipOff);
+        card.addEventListener('focus', flipOn);
+        card.addEventListener('blur', flipOff);
+    })();
+
+  // Keyboard Event
+  const keyDisplay = document.getElementById("keyDisplay");
+  document.addEventListener("keydown", (e) => {
+    keyDisplay.textContent = `You pressed: ${e.key}`;
+    keyDisplay.style.color = `hsl(${Math.random()*360},70%,50%)`;
+    keyDisplay.style.transform = "scale(1.2)";
+    setTimeout(() => keyDisplay.style.transform = "scale(1)", 200);
+  });
+
+  // Form Events
+  const form = document.getElementById("myForm");
+  const formMsg = document.getElementById("formMsg");
+  form.querySelector("input").addEventListener("input", () => {
+    formMsg.textContent = "";
+    setTimeout(()=>{
+        formMsg.textContent = "✏️ Input Changed!";
+        formMsg.style.color = "orange";
+    }, 500)
+    });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    formMsg.textContent = "✅ Form Submitted!";
+    formMsg.style.color = "green";
+  });
+  
+
+  // Window Event
+  const resizeMsg = document.getElementById("resizeMsg");
+  window.addEventListener("resize", () => {
+    resizeMsg.textContent = `Width: ${window.innerWidth}px`;
+    resizeMsg.style.transform = "scale(1.2)";
+    setTimeout(() => resizeMsg.style.transform = "scale(1)", 200);
+  });
+
+  // Clipboard Events
+  const clipInput = document.getElementById("clipInput");
+  const clipMsg = document.getElementById("clipMsg");
+  clipInput.addEventListener("copy", () => {
+    clipMsg.textContent = "📋 You copied!";
+    clipMsg.classList.add("show");
+    setTimeout(() => clipMsg.classList.remove("show"), 1000);
+  });
+  clipInput.addEventListener("paste", () => {
+    clipMsg.textContent = "📥 You pasted!";
+    clipMsg.classList.add("show");
+    setTimeout(() => clipMsg.classList.remove("show"), 1000);
+  });
+
+  // Drag & Drop Events
+  const dropZone = document.getElementById("basketContent");
+  dropZone.addEventListener("dragover", (e) => e.preventDefault());
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.textContent = "🎉 Dropped!";
+    dropZone.classList.add("dropped");
+    setTimeout(() => {
+      dropZone.textContent = "Drop here";
+      dropZone.classList.remove("dropped");
+    }, 1500);
+  });
+
+  // Media Events
+  const video = document.getElementById("myVideo");
+  const videoMsg = document.getElementById("videoMsg");
+  function showVideoMsg(text, color="blue") {
+    videoMsg.textContent = text;
+    videoMsg.style.color = color;
+    videoMsg.classList.add("show");
+    setTimeout(() => videoMsg.classList.remove("show"), 1000);
+  }
+  video.addEventListener("play", () => showVideoMsg("▶️ Playing...", "green"));
+  video.addEventListener("pause", () => showVideoMsg("⏸️ Paused", "orange"));
+  video.addEventListener("ended", () => showVideoMsg("🏁 Video Ended!", "red"));
+
+   /* ===========================================
+            4) DRAG & DROP (HTML5 DnD with drop target)
+            =========================================== */
+    (function setupDragAndDrop() {
+        const items = document.querySelectorAll('.drag-item');
+        const dropzone = document.getElementById('basket');
+        const basketContent = document.getElementById('basketContent');
+
+        // When drag starts, put the dragged item's id into dataTransfer
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.id);
+                // Optional visual cue
+                setTimeout(() => { e.target.style.opacity = '0.5'; }, 0);
+            });
+            item.addEventListener('dragend', (e) => {
+                e.target.style.opacity = '';
+            });
+        });
+
+        // Allow dropping by preventing default in dragover
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault(); // REQUIRED to allow drop
+            dropzone.classList.add('highlight');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('highlight');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('highlight');
+
+            const id = e.dataTransfer.getData('text/plain');
+            if (!id) return;
+
+            const dragged = document.getElementById(id);
+            if (!dragged) return;
+
+            // Clone or move? Here we MOVE into basket
+            basketContent.appendChild(dragged);
+            dragged.setAttribute('draggable', 'true'); // keep draggable in basket
+
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dance Moves Loop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #fef6e4;
+        }
+        .scene {
+            perspective: 300px;
+            margin: 50px 0;
+        }
+        #dancer {
+            font-size: 12rem;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>💃 Dance Moves Loop 🕺</h1>
+    <div class="scene">
+        <div id="dancer">🕺</div>
+    </div>
+    <button class="startDance">Start Dance!</button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

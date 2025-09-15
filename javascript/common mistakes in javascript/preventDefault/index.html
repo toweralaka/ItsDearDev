@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            width: 100vw;
+        }
+        .wrapper{
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            width: 70vw;
+            margin: auto;
+            padding: 10%;
+            border: 2px solid teal;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.5rem;
+            font-style: oblique;
+        }
+    </style>
+    <title>Prevent Default</title>
+</head>
+<body>
+    <div class="wrapper">
+        <h2>event.preventDefault()</h2>
+        
+        <form id="myForm">
+            <input type="text" id="name" placeholder="Enter your name" />
+            <button type="submit">Submit</button>
+        </form>
+        
+        <p id="output"></p>
+
+        <a href="https://google.com" id="myLink">Click me</a>
+    </div>
+
+    <footer>Dear Dev</footer>
+
+    <script> 
+        document.getElementById("myForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            document.getElementById("output").textContent = "Hello, " + name;
+        });
+
+        document.getElementById("myLink").addEventListener("click", function (e) {
+            e.preventDefault();
+            alert("I intercepted your click!");
+        });
+    </script>
+</body>
+</html>

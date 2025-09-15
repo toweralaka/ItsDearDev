@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag Event</title>
+  <style>
+    :root { --gap: 16px; --card-w: 220px; --card-h: 140px; }
+    body { font-family: system-ui, sans-serif; line-height: 1.4; padding: 24px; }
+    section { margin-bottom: 40px; }
+    h2 { margin: 0 0 8px; }
+    .demo { border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+
+    /* Drag & Drop */
+    .drag-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+      align-items: start;
+    }
+    .palette, .dropzone {
+      min-height: 140px;
+      border: 2px dashed #bbb;
+      border-radius: 10px;
+      padding: var(--gap);
+    }
+    .drag-item {
+      display: inline-block;
+      padding: 8px 12px;
+      margin: 6px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+    }
+    .dropzone {
+      transition: background-color .2s, border-color .2s;
+    }
+    .dropzone.highlight {
+      background: #f0fdf4;
+      border-color: #22c55e;
+    }
+
+    .row { display: flex; gap: var(--gap); align-items: center; flex-wrap: wrap; }
+    code.kbd { background: #f3f4f6; padding: 2px 6px; border-radius: 6px; border: 1px solid #e5e7eb; }
+
+    .dragArea {
+        display: flex;
+        justify-content: flex-end;
+        /* height: 200px; */
+        width: 60vw;
+        position: relative;
+        padding: 30px;
+    }
+    .dropBox {
+        height: 200px;
+        width: 200px;
+        padding: 30px;
+        border: 1px solid burlywood;
+    }
+    #dragItem {
+      width: 100px;
+      height: 100px;
+      background: dodgerblue;
+      color: white;
+      text-align: center;
+      line-height: 100px;
+      position: absolute;
+      cursor: grab;
+      left: 10px;
+      top: 10px;
+    }
+  </style>
+</head>
+<body>
+    <div class="dragArea">
+        <div id="dragItem" draggable="true">Drag me</div>
+        <div class="dropBox"></div>
+    </div>
+    <!-- 4) DRAG & DROP with real DROP zone -->
+    <section>
+        <h2>Drag & Drop (with true drop target)</h2>
+        <div class="demo drag-area">
+            <div class="palette" aria-label="Palette (drag from here)">
+                <strong>Palette (draggable):</strong><br />
+                <span class="drag-item" draggable="true" id="item-1">🍎 Apple</span>
+                <span class="drag-item" draggable="true" id="item-2">🍊 Orange</span>
+                <span class="drag-item" draggable="true" id="item-3">🍇 Grapes</span>
+            </div>
+    
+            <div class="dropzone" id="basket" aria-label="Dropzone (drop here)">
+                <strong>Basket (drop here):</strong>
+                <div id="basketContent"></div>
+            </div>
+        </div>
+        <p style="margin-top:8px;">Try dragging a fruit into the basket. The dropzone highlights on hover and accepts drops.
+        </p>
+    </section>
+  <script>
+    //Drag and Drop(mousedown / mousemove / mouseup)
+
+    const item = document.getElementById("dragItem");
+
+    let isDragging = false;
+
+    item.addEventListener("mousedown", () => {
+      isDragging = true;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        item.style.left = e.pageX - 50 + "px";
+        item.style.top = e.pageY - 50 + "px";
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    /* ===========================================
+           4) DRAG & DROP (HTML5 DnD with drop target)
+           =========================================== */
+        (function setupDragAndDrop() {
+            const items = document.querySelectorAll('.drag-item');
+            const dropzone = document.getElementById('basket');
+            const basketContent = document.getElementById('basketContent');
+
+            // When drag starts, put the dragged item's id into dataTransfer
+            items.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                    // Optional visual cue
+                    setTimeout(() => { e.target.style.opacity = '0.5'; }, 0);
+                });
+                item.addEventListener('dragend', (e) => {
+                    e.target.style.opacity = '';
+                });
+            });
+
+            // Allow dropping by preventing default in dragover
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault(); // REQUIRED to allow drop
+                dropzone.classList.add('highlight');
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('highlight');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('highlight');
+
+                const id = e.dataTransfer.getData('text/plain');
+                if (!id) return;
+
+                const dragged = document.getElementById(id);
+                if (!dragged) return;
+
+                // Clone or move? Here we MOVE into basket
+                basketContent.appendChild(dragged);
+                dragged.setAttribute('draggable', 'true'); // keep draggable in basket
+
+                // Optional: announce
+                // console.log(`${dragged.textContent.trim()} dropped into basket`);
+            });
+        })();
+  </script>
+</body>
+</html>

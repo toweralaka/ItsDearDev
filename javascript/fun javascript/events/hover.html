@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hover</title>
+  <style>
+    .cardd {
+      width: 200px;
+      height: 300px;
+      perspective: 1000px;
+    }
+
+    .cardd-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .cardd:hover .cardd-inner {
+      transform: rotateY(180deg);
+    }
+
+    .cardd-front, .cardd-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+    }
+
+    .cardd-front {
+      background: lightblue;
+    }
+
+    .cardd-back {
+      background: lightcoral;
+      transform: rotateY(180deg);
+    }
+    /* Card flip */
+    :root { --gap: 16px; --card-w: 220px; --card-h: 140px; }
+    body { font-family: system-ui, sans-serif; line-height: 1.4; padding: 24px; }
+    section { margin-bottom: 40px; }
+    h2 { margin: 0 0 8px; }
+    .demo { border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+
+    .card {
+      width: var(--card-w);
+      height: var(--card-h);
+      perspective: 1000px;
+      border-radius: 12px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .6s;
+      transform-style: preserve-3d;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.1);
+      overflow: hidden;
+    }
+    .card.is-flipped .card-inner { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      backface-visibility: hidden;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .card-front { background: #e6f2ff; }
+    .card-back  { background: #ffe6ec; transform: rotateY(180deg); }
+
+  </style>
+</head>
+<body>
+  <div class="cardd">
+    <div class="cardd-inner">
+      <div class="cardd-front">Front</div>
+      <div class="cardd-back">Back</div>
+    </div>
+  </div>
+    <!-- 3) CARD FLIP ON HOVER (JS toggles class) -->
+    <section>
+        <h2>Card Flip on Hover (JS adds/removes class)</h2>
+        <div class="demo">
+            <div class="card" id="flipCard" aria-label="Flip card on hover or focus">
+                <div class="card-inner">
+                    <div class="card-face card-front">Front</div>
+                    <div class="card-face card-back">Back</div>
+                </div>
+            </div>
+            <p>Hover or focus the card to flip (JS handles <code>mouseenter</code>/<code>mouseleave</code> and
+                <code>focus</code>/<code>blur</code>).</p>
+        </div>
+    </section>
+  <script>
+    //Turn Card on Hover(mouseover / mouseout + CSS transform)
+    /* ===========================================
+        3) CARD FLIP ON HOVER (JS toggles class)
+        =========================================== */
+    (function setupCardFlip() {
+        const card = document.getElementById('flipCard');
+
+        function flipOn() { card.classList.add('is-flipped'); }
+        function flipOff() { card.classList.remove('is-flipped'); }
+
+        card.setAttribute('tabindex', '0'); // allow keyboard focus
+
+        card.addEventListener('mouseenter', flipOn);
+        card.addEventListener('mouseleave', flipOff);
+        card.addEventListener('focus', flipOn);
+        card.addEventListener('blur', flipOff);
+    })();
+
+  </script>
+</body>
+</html>

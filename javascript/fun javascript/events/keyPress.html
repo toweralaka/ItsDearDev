@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeyPress</title>
+</head>
+<body>
+  
+  <div id="selectSection">
+    <p>What does CPU stand for in computer</p>
+    <label for="optionA">
+      <input name="choices" id="optionA" type="radio" value="A">A.
+      <p>Command Processor Unit </p>
+    </label>
+    <label for="optionB">
+      <input name="choices" id="optionB" type="radio" value="B">B.
+      <p>Central Processing Unit</p>
+    </label>
+    <label for="optionC">
+      <input name="choices" id="optionC" type="radio" value="C">C.
+      <p>Computer Passage Unit</p>
+    </label>
+    <label for="optionD">
+      <input name="choices" id="optionD" type="radio" value="D">D.
+      <p>Computer Progress Unit</p>
+    </label>
+  </div>
+
+    <!-- 2) KEYBOARD: SELECT 'A' WHEN 'A' PRESSED -->
+    <section>
+        <h2>Keyboard: select “A” when you press <code class="kbd">A</code></h2>
+        <div class="demo">
+            <div class="row">
+                <label for="letters">Letters:</label>
+                <select id="letters">
+                    <option value="">— pick one —</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </select>
+            </div>
+            <p>Press <code class="kbd">A</code> anywhere on the page to auto-select “A”.
+                (Typing in inputs won’t trigger it.)</p>
+            <input placeholder="Typing here won't trigger the shortcut" />
+        </div>
+    </section>
+  
+  <script>
+    let questionBox = document.getElementById("selectSection")
+    const selectOption = (choice)=>{
+        questionBox.querySelectorAll("input[name='choices']").forEach(elem=>{
+            if(elem.value===choice){
+                elem.checked = true;
+                console.log(`Selected ${choice} via keyboard`);
+            }
+        })
+    }
+    // questionBox.addEventListener(
+    //     "", eventOne =>{
+        document.addEventListener("keydown", (event)=>{
+        let upperChoice = event.key.toUpperCase();
+        let choicesArray = ["A", "B", "C", "D"];
+        if(choicesArray.includes(upperChoice)){
+            selectOption(upperChoice);
+        }
+        });
+    // })
+    /* =================================================
+        2) KEYBOARD: SELECT "A" WHEN "A" IS PRESSED
+        - Ignores when user is typing in inputs/textareas
+        ================================================= */
+    (function setupKeyASelect() {
+        const select = document.getElementById('letters');
+
+        document.addEventListener('keydown', (e) => {
+            const active = document.activeElement;
+            const typingInField = active && (
+                active.tagName === 'INPUT' ||
+                active.tagName === 'TEXTAREA' ||
+                active.isContentEditable
+            );
+            if (typingInField) return;
+
+            if (e.key.toLowerCase() === 'a') {
+                select.value = 'A';
+                // Optional: announce to screen readers or give feedback
+                // console.log('Selected A via keyboard');
+            }
+        });
+    })();
+
+  </script>
+</body>
+</html>

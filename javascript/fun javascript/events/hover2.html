@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click</title>
+  <style>
+    body {
+        padding: 120px;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 120px;
+      background: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      bottom: 125%; /* above text */
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    /* Tooltip bubble */
+    .tooltip-bubble {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(0,0,0,.85);
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      max-width: 240px;
+      z-index: 9999;
+      transform: translate(8px, 8px);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="tooltip">Hover me
+    <span class="tooltip-text">Hello, I’m a tooltip!</span>
+  </div>
+    <!-- 1) JS TOOLTIP -->
+    <section>
+        <h2>Tooltip (pure JS)</h2>
+        <div class="demo">
+            <p>Hover the highlighted terms to see JS-built tooltips:</p>
+            <p class="row">
+                <span class="has-tooltip" data-tooltip="A lightweight note that follows your cursor.">Tooltip</span>
+                <span class="has-tooltip"
+                    data-tooltip="Events are user actions like 'click', 'keydown', 'drag'.">Event</span>
+                <span class="has-tooltip"
+                    data-tooltip="Always position tooltips within the viewport to avoid clipping.">Positioning</span>
+            </p>
+            <p>Tip: Try moving your mouse—tooltip follows the cursor.</p>
+        </div>
+    </section>
+  <script>
+    // Show Tooltips(mouseover / mouseout)
+    /* =========================
+        1) PURE-JS TOOLTIP
+        ========================= */
+    (function setupTooltips() {
+        let bubble = null;
+
+        function showTooltip(e) {
+            const text = e.currentTarget.getAttribute('data-tooltip');
+            if (!text) return;
+
+            // Create bubble once
+            bubble = document.createElement('div');
+            bubble.className = 'tooltip-bubble';
+            bubble.textContent = text;
+            document.body.appendChild(bubble);
+
+            position(e);
+        }
+
+        function hideTooltip() {
+            if (bubble && bubble.remove) bubble.remove();
+            bubble = null;
+        }
+
+        function position(e) {
+            if (!bubble) return;
+            const padding = 12; // keep inside viewport
+            let x = e.clientX + 10;
+            let y = e.clientY + 10;
+
+            // Clamp within viewport
+            const rect = bubble.getBoundingClientRect();
+            const vw = window.innerWidth, vh = window.innerHeight;
+
+            if (x + rect.width + padding > vw) x = vw - rect.width - padding;
+            if (y + rect.height + padding > vh) y = vh - rect.height - padding;
+
+            bubble.style.left = x + 'px';
+            bubble.style.top = y + 'px';
+        }
+
+        document.querySelectorAll('.has-tooltip').forEach(el => {
+            el.style.background = 'rgba(255, 238, 88, .4)'; // subtle highlight
+            el.style.padding = '2px 6px';
+            el.style.borderRadius = '6px';
+
+            el.addEventListener('mouseenter', showTooltip);
+            el.addEventListener('mousemove', position);
+            el.addEventListener('mouseleave', hideTooltip);
+            el.addEventListener('blur', hideTooltip);
+        });
+    })();
+
+  </script>
+</body>
+</html>
