@@ -55,6 +55,15 @@ logs/
 wip/
 *wip.*
 
+# Media files #
+######################
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.mp3
+*.pdf
+
 # Virtual Environment #
 ######################
 tutenv/
