@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 1: Mood Selector - JavaScript Basics</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 25px;
+      font-size: 1.5em;
+    }
+
+    .mood-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .mood-btn {
+      background: #f5f5f5;
+      border: 3px solid transparent;
+      border-radius: 15px;
+      padding: 25px 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .mood-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .mood-btn.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea15, #764ba215);
+      transform: scale(1.05);
+    }
+
+    .mood-emoji {
+      font-size: 3.5em;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .mood-label {
+      font-weight: bold;
+      color: #333;
+      font-size: 1em;
+    }
+
+    .result-section {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .result-emoji {
+      font-size: 4em;
+      margin-bottom: 10px;
+    }
+
+    .result-text {
+      font-size: 1.3em;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .result-subtext {
+      color: #666;
+      margin-top: 5px;
+      font-size: 0.9em;
+    }
+
+    .tutorial-note {
+      background: rgba(255,255,255,0.15);
+      padding: 15px;
+      border-radius: 10px;
+      color: white;
+      font-size: 0.9em;
+      backdrop-filter: blur(5px);
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>😊 Mood Selector</h1>
+      <p class="subtitle">Part 1: JavaScript Basics</p>
+    </header>
+
+    <div class="card">
+      <h2>How are you feeling right now?</h2>
+      
+      <div class="mood-selector" id="moodSelector">
+        <!-- Mood buttons will be created by JavaScript -->
+      </div>
+
+      <div class="result-section" id="resultSection">
+        <div class="result-emoji" id="resultEmoji">🤔</div>
+        <div class="result-text" id="resultText">Select a mood above!</div>
+        <div class="result-subtext">Click any emoji to get started</div>
+      </div>
+    </div>
+  </div>
+
+  
+</body>
+</html>
