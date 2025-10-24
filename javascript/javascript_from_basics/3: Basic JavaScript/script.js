@@ -80,3 +80,9 @@ function updateResult(mood) {
 createMoodButtons();
 
 // Variables, Arrays, Objects, Functions, DOM Manipulation, and Event Listeners!
+
+
+// // TODO:
+// - Add more moods
+// - Update your message
+// - Add more features
