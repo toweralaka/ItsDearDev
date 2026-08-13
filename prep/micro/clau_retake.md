@@ -146,3 +146,13 @@ Your feedback specifically flagged "optimal algorithmic strategy" and code clean
 - Use the words "idempotency key," "upsert," "unique constraint," "compensating action," and "Saga pattern" explicitly where relevant — the feedback specifically wants to hear this vocabulary, not just the underlying idea.
 - Structure every answer with a spoken shape: *"The problem is X. My approach is Y. The tradeoff is Z."*
 - For scenario/production questions, it's fine to say *"I haven't personally hit this exact failure, but here's how I'd reason through it"* — then walk through the framework. Zara scores structured reasoning, not just war stories.
+
+
+## NOTE
+Three things worth noticing as you study:
+
+1. **Almost every question is really about one of three ideas**: doing the same thing twice by accident (idempotency), two things happening at once and corrupting data (concurrency/atomicity), or changing the data model without breaking old code (backward compatibility). Once you can talk fluently about those three, most of these questions become variations on a theme instead of 15 separate things to memorize.
+
+2. Your feedback wasn't "your answers were wrong" — it was "add the specific implementation vocabulary." You clearly know the concepts (your STAR answer on the payment bug was strong); the gap was naming the exact patterns (idempotency key, upsert, compensating action) rather than describing them generically.
+
+3. It's completely fine to say "I haven't personally hit this exact failure in production" for the ones you haven't — Zara is grading structured reasoning, not just war stories, so walking through the framework confidently still scores well.
