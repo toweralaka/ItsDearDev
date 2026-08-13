@@ -292,6 +292,157 @@ class LineItem:
 
 ---
 
+Good catch, and yes — you had it backwards on categorization, but you're not wrong that there's more here. Let me first fix the terminology confusion, then give you the actual answer.
+
+## Quick reality check on what you've already used
+
+Not everything is a module or a function. Here's the actual breakdown of tools from earlier files:
+
+| Thing | What it actually is |
+|---|---|
+| `collections` | module |
+| `defaultdict`, `Counter`, `deque` | **classes**, live inside `collections` |
+| `namedtuple` | a function that *builds* a class for you |
+| `functools.partial` | **class** |
+| `functools.lru_cache`, `reduce`, `wraps` | functions |
+| `itertools.chain`, `groupby`, `islice` | technically **classes** (Python's docs even write them as `class itertools.chain`) |
+| `heapq`, `bisect` | modules of plain functions — no class involved, they just operate on ordinary lists |
+| `contextlib.suppress` | **class** |
+| `contextlib.contextmanager` | function (a decorator) |
+| `ThreadPoolExecutor`, `ProcessPoolExecutor` | **classes** |
+| `threading.Lock` | **class**-like object |
+
+So you already used several classes without realizing it — you just didn't have the label for it. Fair enough, that's a vocabulary gap, not a knowledge gap.
+
+## Now — actual classes for real speed/memory efficiency, not yet covered
+
+These aren't about cleaner code. Each one exists specifically because the "obvious" way is measurably slower or uses more memory.
+
+### 1. `functools.cached_property` — stop recomputing an expensive attribute
+
+**Problem:** you have an object where some attribute is expensive to compute but never changes once set — like a user's `total_lifetime_spend`, computed from hundreds of order rows.
+
+```python
+from functools import cached_property
+
+class User:
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    @cached_property
+    def total_lifetime_spend(self):
+        print("Computing...")   # only ever prints ONCE per instance
+        return sum(order.total for order in fetch_all_orders(self.user_id))
+
+u = User(42)
+u.total_lifetime_spend   # computes, stores result on the instance
+u.total_lifetime_spend   # returns the stored value, no recompute at all
+```
+
+Different from `lru_cache`: `lru_cache` caches by *arguments*, shared across all calls. `cached_property` caches *per instance*, and stores the result directly on that object — no arguments needed since it's just `self`.
+
+### 2. `re.Pattern` (via `re.compile`) — stop re-parsing the same regex
+
+**Problem:** validating thousands of emails in a loop with `re.match(pattern, text)`.
+
+```python
+import re
+
+EMAIL_RE = re.compile(r"[^@]+@[^@]+\.[^@]+")   # parsed ONCE
+
+def is_valid_email(email):
+    return bool(EMAIL_RE.match(email))         # reuses the compiled pattern every time
+```
+
+If you call `re.match(r"...", text)` inside a loop instead, Python re-parses that pattern string from scratch on every single call. `re.compile` gives you back a `Pattern` object that's already parsed — a real, measurable speedup in any hot loop doing repeated matching.
+
+### 3. `io.StringIO` — stop doing repeated string concatenation
+
+**Problem:** building a large CSV or log string piece by piece.
+
+```python
+# BAD — each += creates a whole new string, copying everything so far, every time
+result = ""
+for row in rows:
+    result += format_row(row)   # O(n²) total cost as it grows
+
+# GOOD — appends into a mutable buffer, no repeated copying
+from io import StringIO
+buffer = StringIO()
+for row in rows:
+    buffer.write(format_row(row))
+result = buffer.getvalue()
+```
+
+Strings in Python are immutable — every `+=` silently creates a brand-new string and copies the old content into it. Do that in a loop over thousands of rows and it turns quadratic. `StringIO` gives you a writable, in-memory buffer, so writes are cheap and you only pay for one final read.
+
+### 4. `array.array` — stop wasting memory on large numeric collections
+
+**Problem:** storing a million integers (say, timestamps or product IDs) for numeric processing.
+
+```python
+import array
+
+# a regular list stores a POINTER to each Python int object (extra overhead per element)
+big_list = [i for i in range(1_000_000)]
+
+# array.array stores raw C-level integers directly, no per-item object overhead
+big_array = array.array('l', range(1_000_000))   # 'l' = signed long
+```
+
+A Python `list` of a million ints stores a million *pointers* to separately-allocated int objects. `array.array` stores the raw values packed together like a C array — for large, uniform numeric data, this is a genuine, significant memory reduction (often 3-4x less memory).
+
+### 5. `queue.Queue` — thread-safe hand-off without managing locks yourself
+
+**Problem:** one thread produces work (say, incoming webhook events), another thread processes them — you need this to be safe without manually juggling a `Lock`.
+
+```python
+import queue
+import threading
+
+work_queue = queue.Queue()
+
+def producer():
+    for event in incoming_events():
+        work_queue.put(event)
+
+def consumer():
+    while True:
+        event = work_queue.get()   # blocks efficiently until something's available — no manual locking, no busy-waiting
+        process(event)
+        work_queue.task_done()
+
+threading.Thread(target=producer).start()
+threading.Thread(target=consumer).start()
+```
+
+You *could* build this yourself with a list + a `Lock` + manual "wait until non-empty" logic — but you'd likely end up either busy-waiting (wasting CPU checking "is it empty yet?" in a loop) or writing bug-prone synchronization by hand. `queue.Queue` has efficient blocking built in at the C level.
+
+### 6. `threading.local` — skip the lock entirely by not sharing the data
+
+**Problem:** each thread needs its own scratch data (e.g., its own DB connection, or its own request context), and you keep reaching for a `Lock` to protect a shared dict — but the data doesn't actually need to be shared at all.
+
+```python
+import threading
+
+_thread_data = threading.local()
+
+def get_db_connection():
+    if not hasattr(_thread_data, "conn"):
+        _thread_data.conn = create_new_connection()   # each thread gets its OWN conn, automatically
+    return _thread_data.conn
+```
+
+This is a genuine efficiency win specifically because it **avoids locking altogether** — if data genuinely doesn't need to cross threads, giving each thread its own private copy is faster than making every thread take turns through a lock to access one shared copy.
+
+---
+
+## The pattern across all of these
+
+Every one of these exists to avoid one of three costs: **recomputation** (`cached_property`, `re.compile`), **repeated copying/reallocation** (`StringIO`, `array.array`), or **synchronization overhead** (`Queue`, `threading.local`). If you can name *which* of those three a tool is solving in the interview, that's a much stronger signal than just knowing the tool exists.
+
+---
+
 
 ## DEFAULTDICT
 
